@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <startup> 
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7.2" />
+    </startup>
+  <connectionStrings>
+    <add name="DBConnection" connectionString="Data Source=DESKTOP-Q179QED\SQLEXPRESS;Initial Catalog=Exam;Integrated Security=True" providerName="System.Data.SqlClient" />
+  </connectionStrings>
+</configuration>
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Configuration;
+using System.Data.SqlClient;
+
+namespace ExamForm
+{
+    class DatabaseConnector
+    {
+        string connectionString = ConfigurationManager.ConnectionStrings["DBConnection"].ConnectionString;
+
+        SqlConnection con = new SqlConnection();
+        public SqlConnection OpenConnection()
+        {
+            con.ConnectionString = connectionString;
+            con.Open();
+            return con;
+        }
+
+        public void closeConnection() { 
+            con.Close();
+        }
+    }
+}
+
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace ExamForm
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                String fName = textBox1.Text;
+                int Age = int.Parse(textBox2.Text);
+
+                DatabaseConnector db = new DatabaseConnector();
+                SqlConnection con = db.OpenConnection();
+                string insertSQL = "insert into[dbo].[Person1] values('"+fName+"',"+Age+");";
+                SqlCommand cmd = new SqlCommand(insertSQL, con);
+
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Record inserted Successfully");
+                db.closeConnection();
+            }
+            catch(Exception ee)
+            {
+                e.ToString();
+            }
+        }
+    }
+}
+
